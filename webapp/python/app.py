@@ -374,16 +374,15 @@ def get_new_items():
                 if item is None:
                     break
 
-                seller = {
+                category = get_category_by_id(item["category_id"])
+
+                item["category"] = category
+                item["seller"] = {
                     'id': item['seller_id'],
                     'account_name': item['account_name'],
                     'address': item['address'],
                     'num_sell_items': item['num_sell_items'],
                 }
-                category = get_category_by_id(item["category_id"])
-
-                item["category"] = category
-                item["seller"] = to_user_json(seller)
                 item["image_url"] = get_image_url(item["image_name"])
                 item = to_item_json(item, simple=True)
 
@@ -467,16 +466,15 @@ def get_new_category_items(root_category_id=None):
                 if item is None:
                     break
 
-                seller = {
+                category = get_category_by_id(item["category_id"])
+
+                item["category"] = category
+                item["seller"] = {
                     'id': item['seller_id'],
                     'account_name': item['account_name'],
                     'address': item['address'],
                     'num_sell_items': item['num_sell_items'],
                 }
-                category = get_category_by_id(item["category_id"])
-
-                item["category"] = category
-                item["seller"] = to_user_json(seller)
                 item["image_url"] = get_image_url(item["image_name"])
                 item = to_item_json(item, simple=True)
 
@@ -559,16 +557,15 @@ def get_transactions():
                 if item is None:
                     break
 
-                seller = {
+                category = get_category_by_id(item["category_id"])
+
+                item["category"] = category
+                item["seller"] = {
                     'id': item['seller_id'],
                     'account_name': item['account_name'],
                     'address': item['address'],
                     'num_sell_items': item['num_sell_items'],
                 }
-                category = get_category_by_id(item["category_id"])
-
-                item["category"] = category
-                item["seller"] = to_user_json(seller)
                 item["image_url"] = get_image_url(item["image_name"])
                 item = to_item_json(item, simple=False)
 
@@ -659,16 +656,15 @@ def get_user_items(user_id=None):
                 if item is None:
                     break
 
-                seller = {
+                category = get_category_by_id(item["category_id"])
+
+                item["category"] = category
+                item["seller"] = {
                     'id': item['seller_id'],
                     'account_name': item['account_name'],
                     'address': item['address'],
                     'num_sell_items': item['num_sell_items'],
                 }
-                category = get_category_by_id(item["category_id"])
-
-                item["category"] = category
-                item["seller"] = to_user_json(seller)
                 item["image_url"] = get_image_url(item["image_name"])
                 item = to_item_json(item, simple=True)
                 item_simples.append(item)
@@ -702,16 +698,15 @@ def get_item(item_id=None):
             if item is None:
                 http_json_error(requests.codes['not_found'], "item not found")
 
-            seller = {
+            category = get_category_by_id(item["category_id"])
+
+            item["category"] = category
+            item["seller"] = {
                 'id': item['seller_id'],
                 'account_name': item['account_name'],
                 'address': item['address'],
                 'num_sell_items': item['num_sell_items'],
             }
-            category = get_category_by_id(item["category_id"])
-
-            item["category"] = category
-            item["seller"] = to_user_json(seller)
             item["image_url"] = get_image_url(item["image_name"])
             item = to_item_json(item, simple=False)
 
