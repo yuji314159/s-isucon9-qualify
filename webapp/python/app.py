@@ -800,6 +800,31 @@ def post_item_edit():
     ))
 
 
+cache_ship_reserve = {}
+def ship_reserve(to_address, to_name, from_adress, from_name):
+    global cache_ship_reserve
+
+    key = f'{to_address}_{to_name}_{from_address}_{from_name}'
+    if key in cache_ship_reserve:
+        return cache_ship_reserve[key]
+
+    try:
+        res = requests.post(shipment_url + "/create",
+            headers=dict(Authorization=Constants.ISUCARI_API_TOKEN),
+            json=dict(to_address=to_address, to_name=to_name, from_address=from_adress, from_name=from_name),
+            verify=False)
+        res.raise_for_status()
+    except (socket.gaierror, requests.HTTPError) as err:
+        conn.rollback()
+        app.logger.exception(err)
+        http_json_error(requests.codes['internal_server_error'])
+
+    shipping_res = res.json()
+    cache_ship_reserve[key] = shipping_res
+
+    return shipping_res
+
+
 @app.route("/buy", methods=["POST"])
 def post_buy():
     ensure_valid_csrf_token()
@@ -857,23 +882,7 @@ def post_buy():
                 target_item['id'],
             ))
 
-            try:
-                res = requests.post(shipment_url + "/create",
-                                    headers=dict(Authorization=Constants.ISUCARI_API_TOKEN),
-                                    json=dict(
-                                        to_address=buyer['address'],
-                                        to_name=buyer['account_name'],
-                                        from_address=target_item['address'],
-                                        from_name=target_item['account_name'],
-                                    ),
-                                    verify=False)
-                res.raise_for_status()
-            except (socket.gaierror, requests.HTTPError) as err:
-                conn.rollback()
-                app.logger.exception(err)
-                http_json_error(requests.codes['internal_server_error'])
-
-            shipping_res = res.json()
+            shipping_res = ship_reserve(buyer['address'], buyer['account_name'], target_item['address'], target_item['account_name'])
 
             try:
                 res = requests.post(payment_url + "/token",
