@@ -1427,4 +1427,4 @@ def get_index(*args, **kwargs):
 # @app.route("/*")
 
 if __name__ == "__main__":
-    app.run(port=8000, debug=False, threaded=True)
+    app.run(port=8000, debug=True, threaded=True)
