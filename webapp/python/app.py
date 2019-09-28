@@ -811,11 +811,19 @@ def post_buy():
     try:
         conn.begin()
         with conn.cursor() as c:
-            sql = "SELECT * FROM `items` WHERE `id` = %s FOR UPDATE"
+            sql = "SELECT items.id as id, seller_id, buyer_id, status, name, price, description, image_name, category_id, items.created_at as created_at, updated_at, account_name, address FROM `items` JOIN `users` on seller_id = users.id WHERE items.id = %s FOR UPDATE"
             c.execute(sql, (flask.request.json['item_id'],))
             target_item = c.fetchone()
             if target_item is None:
                 conn.rollback()
+
+                sql = "SELECT * FROM `users` WHERE `id` = %s FOR UPDATE"
+                c.execute(sql, (target_item['seller_id'],))
+                seller = c.fetchone()
+                if seller is None:
+                    conn.rollback()
+                    http_json_error(requests.codes['not_found'], "seller not found")
+
                 http_json_error(requests.codes['not_found'], "item not found")
             if target_item['status'] != Constants.ITEM_STATUS_ON_SALE:
                 conn.rollback()
@@ -823,12 +831,7 @@ def post_buy():
             if target_item['seller_id'] == buyer['id']:
                 conn.rollback()
                 http_json_error(requests.codes['forbidden'], "自分の商品は買えません")
-            sql = "SELECT * FROM `users` WHERE `id` = %s FOR UPDATE"
-            c.execute(sql, (target_item['seller_id'],))
-            seller = c.fetchone()
-            if seller is None:
-                conn.rollback()
-                http_json_error(requests.codes['not_found'], "seller not found")
+
             category = get_category_by_id(target_item['category_id'])
             # TODO: check category error
             sql = "INSERT INTO `transaction_evidences` (`seller_id`, `buyer_id`, `status`, `item_id`, `item_name`, " \
@@ -860,8 +863,8 @@ def post_buy():
                                     json=dict(
                                         to_address=buyer['address'],
                                         to_name=buyer['account_name'],
-                                        from_address=seller['address'],
-                                        from_name=seller['account_name'],
+                                        from_address=target_item['address'],
+                                        from_name=target_item['account_name'],
                                     ),
                                     verify=False)
                 res.raise_for_status()
@@ -910,8 +913,8 @@ def post_buy():
                 shipping_res["reserve_time"],
                 buyer["address"],
                 buyer["account_name"],
-                seller["address"],
-                seller["account_name"],
+                target_item["address"],
+                target_item["account_name"],
                 ""
             ))
         conn.commit()
