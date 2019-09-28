@@ -196,7 +196,7 @@ CATEGORIES = {
 def get_category_by_id(category_id):
     category_id = int(category_id)
     category = CATEGORIES[category_id]
-    category['category_id'] = category_id
+    category['id'] = category_id
     if category['parent_id'] != 0:
         parent = get_category_by_id(category['parent_id'])
         if parent is not None:
