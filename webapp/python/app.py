@@ -247,14 +247,22 @@ def get_config(name):
     return config
 
 
+payment_url_cache = None
 def get_payment_service_url():
+    if payment_url_cache:
+        return payment_url_cache
     config = get_config("payment_service_url")
-    return Constants.DEFAULT_PAYMENT_SERVICE_URL if config is None else config['val']
+    payment_url_cache = Constants.DEFAULT_PAYMENT_SERVICE_URL if config is None else config['val']
+    return payment_url_cache
 
 
+shipment_url_cache = None
 def get_shipment_service_url():
+    if shipment_url_cache:
+        return shipment_url_cache
     config = get_config("shipment_service_url")
-    return Constants.DEFAULT_SHIPMENT_SERVICE_URL if config is None else config['val']
+    shipment_url_cache = Constants.DEFAULT_SHIPMENT_SERVICE_URL if config is None else config['val']
+    return shipment_url_cache
 
 
 def api_shipment_status(shipment_url, params={}):
