@@ -423,12 +423,8 @@ def get_new_category_items(root_category_id=None):
             c.execute(sql, (
                 root_category_id,
             ))
-
-            while True:
-                category = c.fetchone()
-                if category is None:
-                    break
-                category_ids.append(category["id"])
+            categories = c.fetchall()
+            category_ids = [category['id'] for category in categories]
 
             if item_id > 0 and created_at > 0:
                 sql = "SELECT items.id as id, seller_id, buyer_id, status, name, price, description, image_name, category_id, items.created_at as created_at, updated_at, account_name, address, num_sell_items FROM `items` JOIN `users` on seller_id = users.id WHERE `status` IN (%s,%s) AND category_id IN ("+ ",".join(["%s"]*len(category_ids))+ ") AND (items.created_at < %s OR (items.created_at < %s AND items.id < %s)) ORDER BY items.created_at DESC, items.id DESC LIMIT %s"
@@ -451,16 +447,10 @@ def get_new_category_items(root_category_id=None):
                     Constants.ITEMS_PER_PAGE + 1,
                 ))
 
+            items = c.fetchall()
             item_simples = []
-            while True:
-                item = c.fetchone()
-
-                if item is None:
-                    break
-
-                category = get_category_by_id(item["category_id"])
-
-                item["category"] = category
+            for item in items:
+                item["category"] = get_category_by_id(item["category_id"])
                 item["seller"] = {
                     'id': item['seller_id'],
                     'account_name': item['account_name'],
@@ -469,7 +459,6 @@ def get_new_category_items(root_category_id=None):
                 }
                 item["image_url"] = get_image_url(item["image_name"])
                 item = to_item_json(item, simple=True)
-
                 item_simples.append(item)
 
         except MySQLdb.Error as err:
@@ -542,16 +531,10 @@ def get_transactions():
                     Constants.TRANSACTIONS_PER_PAGE + 1,
                 ])
 
+            items = c.fetchall()
             item_details = []
-            while True:
-                item = c.fetchone()
-
-                if item is None:
-                    break
-
-                category = get_category_by_id(item["category_id"])
-
-                item["category"] = category
+            for item in items:
+                item["category"] = get_category_by_id(item["category_id"])
                 item["seller"] = {
                     'id': item['seller_id'],
                     'account_name': item['account_name'],
@@ -561,13 +544,10 @@ def get_transactions():
                 item["image_url"] = get_image_url(item["image_name"])
                 item = to_item_json(item, simple=False)
 
-                item_details.append(item)
-
                 with conn.cursor() as c2:
                     sql = "SELECT * FROM `transaction_evidences` WHERE `item_id` = %s"
                     c2.execute(sql, [item['id']])
                     transaction_evidence = c2.fetchone()
-
 
                     if transaction_evidence:
                         sql = "SELECT * FROM `shippings` WHERE `transaction_evidence_id` = %s"
@@ -580,6 +560,8 @@ def get_transactions():
                         item["transaction_evidence_id"] = transaction_evidence["id"]
                         item["transaction_evidence_status"] = transaction_evidence["status"]
                         item["shipping_status"] = ssr["status"]
+
+                item_details.append(item)
 
         except MySQLdb.Error as err:
             app.logger.exception(err)
