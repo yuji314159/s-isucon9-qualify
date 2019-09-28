@@ -249,6 +249,7 @@ def get_config(name):
 
 payment_url_cache = None
 def get_payment_service_url():
+    global payment_url_cache
     if payment_url_cache:
         return payment_url_cache
     config = get_config("payment_service_url")
@@ -258,6 +259,7 @@ def get_payment_service_url():
 
 shipment_url_cache = None
 def get_shipment_service_url():
+    global shipment_url_cache
     if shipment_url_cache:
         return shipment_url_cache
     config = get_config("shipment_service_url")
