@@ -801,7 +801,7 @@ def post_item_edit():
 
 
 cache_ship_reserve = {}
-def ship_reserve(to_address, to_name, from_adress, from_name):
+def ship_reserve(to_address, to_name, from_address, from_name):
     global cache_ship_reserve
 
     key = f'{to_address}_{to_name}_{from_address}_{from_name}'
