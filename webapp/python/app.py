@@ -811,7 +811,7 @@ def ship_reserve(to_address, to_name, from_address, from_name):
     try:
         res = requests.post(get_shipment_service_url() + "/create",
             headers=dict(Authorization=Constants.ISUCARI_API_TOKEN),
-            json=dict(to_address=to_address, to_name=to_name, from_address=from_adress, from_name=from_name),
+            json=dict(to_address=to_address, to_name=to_name, from_address=from_address, from_name=from_name),
             verify=False)
         res.raise_for_status()
     except (socket.gaierror, requests.HTTPError) as err:
