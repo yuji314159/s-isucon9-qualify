@@ -1300,16 +1300,7 @@ def get_settings():
         outputs['user'] = to_user_json(user)
     outputs['csrf_token'] = flask.session.get('csrf_token', '')
 
-    try:
-        conn = dbh()
-        sql = "SELECT * FROM `categories`"
-        with conn.cursor() as c:
-            c.execute(sql)
-            categories = c.fetchall()
-    except MySQLdb.Error as err:
-        app.logger.exception(err)
-        http_json_error(requests.codes['internal_server_error'], "db error")
-    outputs['categories'] = categories
+    outputs['categories'] = list(CATEGORIES.values())
     outputs['payment_service_url'] = get_payment_service_url()
 
     return flask.jsonify(outputs)
