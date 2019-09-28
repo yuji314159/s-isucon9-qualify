@@ -366,17 +366,10 @@ def get_new_items():
                     Constants.ITEMS_PER_PAGE + 1
                 ))
 
+            items = c.fetchall()
             item_simples = []
-
-            while True:
-                item = c.fetchone()
-
-                if item is None:
-                    break
-
-                category = get_category_by_id(item["category_id"])
-
-                item["category"] = category
+            for item in items:
+                item["category"] = get_category_by_id(item["category_id"])
                 item["seller"] = {
                     'id': item['seller_id'],
                     'account_name': item['account_name'],
@@ -385,7 +378,6 @@ def get_new_items():
                 }
                 item["image_url"] = get_image_url(item["image_name"])
                 item = to_item_json(item, simple=True)
-
                 item_simples.append(item)
 
             has_next = False
