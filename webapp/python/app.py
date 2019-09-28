@@ -194,6 +194,7 @@ CATEGORIES = {
     66: {'parent_id': 60, 'category_name': "空気椅子"}
 }
 def get_category_by_id(category_id):
+    category_id = int(category_id)
     category = CATEGORIES[category_id]
     category['category_id'] = category_id
     if category['parent_id'] != 0:
