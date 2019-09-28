@@ -148,13 +148,53 @@ def get_user_simple_by_id(user_id):
     return user
 
 
+CATEGORIES = {
+    1: {'parent_id': 0, 'category_name': "ソファー"},
+    2: {'parent_id': 1, 'category_name': "一人掛けソファー"},
+    3: {'parent_id': 1, 'category_name': "二人掛けソファー"},
+    4: {'parent_id': 1, 'category_name': "コーナーソファー"},
+    5: {'parent_id': 1, 'category_name': "二段ソファー"},
+    6: {'parent_id': 1, 'category_name': "ソファーベッド"},
+    10: {'parent_id': 0, 'category_name': "家庭用チェア"},
+    11: {'parent_id': 10, 'category_name': "スツール"},
+    12: {'parent_id': 10, 'category_name': "クッションスツール"},
+    13: {'parent_id': 10, 'category_name': "ダイニングチェア"},
+    14: {'parent_id': 10, 'category_name': "リビングチェア"},
+    15: {'parent_id': 10, 'category_name': "カウンターチェア"},
+    20: {'parent_id':  0, 'category_name': "キッズチェア"},
+    21: {'parent_id': 20, 'category_name': "学習チェア"},
+    22: {'parent_id': 20, 'category_name': "ベビーソファ"},
+    23: {'parent_id': 20, 'category_name': "キッズハイチェア"},
+    24: {'parent_id': 20, 'category_name': "テーブルチェア"},
+    30: {'parent_id':  0, 'category_name': "オフィスチェア"},
+    31: {'parent_id': 30, 'category_name': "デスクチェア"},
+    32: {'parent_id': 30, 'category_name': "ビジネスチェア"},
+    33: {'parent_id': 30, 'category_name': "回転チェア"},
+    34: {'parent_id': 30, 'category_name': "リクライニングチェア"},
+    35: {'parent_id': 30, 'category_name': "投擲用椅子"},
+    40: {'parent_id':  0, 'category_name': "折りたたみ椅子"},
+    41: {'parent_id': 40, 'category_name': "パイプ椅子"},
+    42: {'parent_id': 40, 'category_name': "木製折りたたみ椅子"},
+    43: {'parent_id': 40, 'category_name': "キッチンチェア"},
+    44: {'parent_id': 40, 'category_name': "アウトドアチェア"},
+    45: {'parent_id': 40, 'category_name': "作業椅子"},
+    50: {'parent_id':  0, 'category_name': "ベンチ"},
+    51: {'parent_id': 50, 'category_name': "一人掛けベンチ"},
+    52: {'parent_id': 50, 'category_name': "二人掛けベンチ"},
+    53: {'parent_id': 50, 'category_name': "アウトドア用ベンチ"},
+    54: {'parent_id': 50, 'category_name': "収納付きベンチ"},
+    55: {'parent_id': 50, 'category_name': "背もたれ付きベンチ"},
+    56: {'parent_id': 50, 'category_name': "ベンチマーク"},
+    60: {'parent_id':  0, 'category_name': "座椅子"},
+    61: {'parent_id': 60, 'category_name': "和風座椅子"},
+    62: {'parent_id': 60, 'category_name': "高座椅子"},
+    63: {'parent_id': 60, 'category_name': "ゲーミング座椅子"},
+    64: {'parent_id': 60, 'category_name': "ロッキングチェア"},
+    65: {'parent_id': 60, 'category_name': "座布団"},
+    66: {'parent_id': 60, 'category_name': "空気椅子"}
+}
 def get_category_by_id(category_id):
-    conn = dbh()
-    sql = "SELECT * FROM `categories` WHERE `id` = %s"
-    with conn.cursor() as c:
-        c.execute(sql, (category_id,))
-        category = c.fetchone()
-        # TODO: check err
+    category = CATEGORIES[category_id]
     if category['parent_id'] != 0:
         parent = get_category_by_id(category['parent_id'])
         if parent is not None:
