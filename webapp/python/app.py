@@ -784,6 +784,8 @@ def post_item_edit():
 def post_buy():
     ensure_valid_csrf_token()
     buyer = get_user()
+    shipment_url = get_shipment_service_url()
+    payment_url = get_payment_service_url()
 
     conn = dbh()
     try:
@@ -832,15 +834,14 @@ def post_buy():
                 target_item['id'],
             ))
 
-            host = get_shipment_service_url()
             try:
-                res = requests.post(host + "/create",
+                res = requests.post(shipment_url + "/create",
                                     headers=dict(Authorization=Constants.ISUCARI_API_TOKEN),
                                     json=dict(
                                         to_address=buyer['address'],
                                         to_name=buyer['account_name'],
                                         from_address=seller['address'],
-                                            from_name=seller['account_name'],
+                                        from_name=seller['account_name'],
                                     ),
                                     verify=False)
                 res.raise_for_status()
@@ -851,9 +852,8 @@ def post_buy():
 
             shipping_res = res.json()
 
-            host = get_payment_service_url()
             try:
-                res = requests.post(host + "/token",
+                res = requests.post(payment_url + "/token",
                                     json=dict(
                                         shop_id=Constants.PAYMENT_SERVICE_ISUCARI_SHOP_ID,
                                         api_key=Constants.PAYMENT_SERVICE_ISUCARI_API_KEY,
