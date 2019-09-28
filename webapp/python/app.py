@@ -778,7 +778,7 @@ def post_buy():
     conn = dbh()
     try:
         conn.begin()
-        with conn.cursor() as c:
+        with conn.cursor() as c:            
             sql = "SELECT * FROM `items` WHERE `id` = %s FOR UPDATE"
             c.execute(sql, (flask.request.json['item_id'],))
             target_item = c.fetchone()
@@ -1300,16 +1300,17 @@ def get_settings():
         outputs['user'] = to_user_json(user)
     outputs['csrf_token'] = flask.session.get('csrf_token', '')
 
-    try:
-        conn = dbh()
-        sql = "SELECT * FROM `categories`"
-        with conn.cursor() as c:
-            c.execute(sql)
-            categories = c.fetchall()
-    except MySQLdb.Error as err:
-        app.logger.exception(err)
-        http_json_error(requests.codes['internal_server_error'], "db error")
-    outputs['categories'] = categories
+    # try:
+    #     conn = dbh()
+    #     sql = "SELECT * FROM `categories`"
+    #     with conn.cursor() as c:
+    #         c.execute(sql)
+    #         categories = c.fetchall()
+    # except MySQLdb.Error as err:
+    #     app.logger.exception(err)
+    #     http_json_error(requests.codes['internal_server_error'], "db error")
+    #outputs['categories'] = categories
+    outputs['categories'] = CATEGORIES
     outputs['payment_service_url'] = get_payment_service_url()
 
     return flask.jsonify(outputs)
