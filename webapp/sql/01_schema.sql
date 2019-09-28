@@ -32,6 +32,7 @@ CREATE TABLE `items` (
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   INDEX idx_category_id (`category_id`)
 ) ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb4;
+CREATE INDEX idx_01 ON items (status, category_id,created_at, id);
 
 DROP TABLE IF EXISTS `transaction_evidences`;
 CREATE TABLE `transaction_evidences` (
@@ -72,3 +73,4 @@ CREATE TABLE `categories` (
   `parent_id` int unsigned NOT NULL,
   `category_name` varchar(191) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb4;
+
