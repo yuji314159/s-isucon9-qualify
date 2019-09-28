@@ -809,7 +809,7 @@ def ship_reserve(to_address, to_name, from_address, from_name):
         return cache_ship_reserve[key]
 
     try:
-        res = requests.post(shipment_url + "/create",
+        res = requests.post(get_shipment_service_url() + "/create",
             headers=dict(Authorization=Constants.ISUCARI_API_TOKEN),
             json=dict(to_address=to_address, to_name=to_name, from_address=from_adress, from_name=from_name),
             verify=False)
@@ -829,7 +829,6 @@ def ship_reserve(to_address, to_name, from_address, from_name):
 def post_buy():
     ensure_valid_csrf_token()
     buyer = get_user()
-    shipment_url = get_shipment_service_url()
     payment_url = get_payment_service_url()
 
     conn = dbh()
